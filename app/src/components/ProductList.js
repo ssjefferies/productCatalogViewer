@@ -66,14 +66,11 @@ const ProductList = () => {
 
     const productsList = products.map(product => (
         <tr key={product.product_key}>
-            <td>
-                {product.product_name}
-                <br />
-                <ProductDetails product={product} />
-            </td>
+            <td>{product.product_name}</td>
             <td>{product.brand}</td>
             <td>${product.price}</td>
             <td>{product.model}</td>
+            <td><ProductDetails product={product} /></td>
         </tr>
     ));
 
@@ -82,9 +79,12 @@ const ProductList = () => {
             <Container fluid>
                 {error && <div className="alert alert-danger">{error.message}</div>}
                 <h1>Product List</h1>
-                <Button color="primary" onClick={toggleAddProduct}>
-                    {showAddProduct ? 'Hide Add Product Form' : 'Add Product'}
-                </Button>
+                {
+                    !showAddProduct && 
+                    <Button color="primary" onClick={toggleAddProduct}>
+                        Add Product
+                    </Button>
+                }
                 {showAddProduct && <AddProduct onAddProduct={handleAddProduct} onClose={handleCloseAddProduct} />}
                 <Table striped>
                     <thead>
@@ -93,6 +93,7 @@ const ProductList = () => {
                             <th>Brand</th>
                             <th>Price</th>
                             <th>Model</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>

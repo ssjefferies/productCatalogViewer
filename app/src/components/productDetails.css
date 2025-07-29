@@ -6,7 +6,8 @@
 .product-details {
 	text-align: left;
 	position: absolute;
-	width: 80vw;
+	transform: translateX(-95%);
+	width: 90vw;
 	top: 100%;
 	margin-top: 10px;
 	background-color: #fff;
