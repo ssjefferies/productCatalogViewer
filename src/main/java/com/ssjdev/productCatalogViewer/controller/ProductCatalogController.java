@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssjdev.productCatalogViewer.dto.BrandSummaryDTO;
 import com.ssjdev.productCatalogViewer.dto.ProductDTO;
 import com.ssjdev.productCatalogViewer.service.ProductService;
 
@@ -30,6 +32,16 @@ public class ProductCatalogController {
 	@GetMapping("/products")
 	public List<ProductDTO> getAllProducts() {
 		return productService.getAllProducts();
+	}
+	
+	@GetMapping("/products/{productKey}")
+	public ProductDTO getProductById(@PathVariable Long productKey) {
+		return productService.findProduct(productKey);
+	}
+	
+	@GetMapping("/products/brand-summary")
+	public List<BrandSummaryDTO> getBrandSummary() {
+		return productService.getBrandSummary();
 	}
 	
 	@PostMapping("/products")
