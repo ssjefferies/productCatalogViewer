@@ -1,28 +1,25 @@
-import { Button } from 'bootstrap';
 import React, { useEffect, useState } from 'react';
+import { Button } from 'reactstrap';
 import { Container, Table } from 'reactstrap';
 import ProductDetails from './ProductDetails';
+import AddProduct from './AddProduct';
 import './productList.css';
 
 const ProductList = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showAddProduct, setShowAddProduct] = useState(false);
 
     const [error, setError] = useState(null);
 
-    const handleViewDetails = (product) => {
-        // This function can be used to handle viewing product details
-        // For now, it just alerts the product name
-        alert(`Viewing details for ${product.product_name}`);
-    }
 
     useEffect(() => {
         setLoading(true);
         fetch('/api/products')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Unable to fetch products');
+                    setError("Unable to fetch products");
                 }
                 return response.json();
             })
@@ -36,8 +33,35 @@ const ProductList = () => {
         return <div>Loading...</div>;
     }
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
+    const toggleAddProduct = () => {
+        setShowAddProduct(!showAddProduct);
+    }
+
+    const handleAddProduct = (newProduct) => {
+        fetch('/api/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProduct),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add product');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setProducts([...products, data]);
+                setShowAddProduct(false);
+            })
+            .catch(error => {
+                setError(error);
+            });
+    }
+
+    const handleCloseAddProduct = () => {
+        setShowAddProduct(false);
     }
 
     const productsList = products.map(product => (
@@ -56,7 +80,12 @@ const ProductList = () => {
     return (
         <div>
             <Container fluid>
+                {error && <div className="alert alert-danger">{error.message}</div>}
                 <h1>Product List</h1>
+                <Button color="primary" onClick={toggleAddProduct}>
+                    {showAddProduct ? 'Hide Add Product Form' : 'Add Product'}
+                </Button>
+                {showAddProduct && <AddProduct onAddProduct={handleAddProduct} onClose={handleCloseAddProduct} />}
                 <Table striped>
                     <thead>
                         <tr>
