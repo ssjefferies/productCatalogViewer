@@ -2,6 +2,7 @@ package com.ssjdev.productCatalogViewer.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,12 @@ public class ProductService {
 	}
 	
 	public ProductDTO findProduct(Long productId) {
-		return modelToDto(productRepository.getById(productId));
+		Optional<Product> optionalEntity = productRepository.findById(productId);
+	    if (optionalEntity.isPresent()) {
+	    	return modelToDto(optionalEntity.get());
+	    } else {
+	    	return new ProductDTO();
+	    }
 	}
 	
 	public List<BrandSummaryDTO> getBrandSummary() {
