@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Button } from 'reactstrap';
 import './productDetails.css';
 
 const PrdouctDetails = ({ product }) => {
@@ -30,9 +31,9 @@ const PrdouctDetails = ({ product }) => {
 
     return (
         <div className="product-details-container">
-            <button className="toggle-details" onClick={toggleDetails}>
-                {isOpen ? 'Hide Details' : 'View Details'}
-            </button>
+            <Button color="primary" className="toggle-details" onClick={toggleDetails}>
+                {isOpen ? 'Hide Details' : 'Details'}
+            </Button>
             {
                 isOpen ? (
                     <div className="product-details">
