@@ -1,7 +1,7 @@
 # Product Catalog Viewer
 
 A Spring Boot REST API for managing product catalogs with full CRUD operations.
-(Also see the README.md in the /api folder for information about the UI portion of the app).
+(Also see the README.md in the ./app folder for information about the UI portion of the app).
 
 ## Prerequisites
 
