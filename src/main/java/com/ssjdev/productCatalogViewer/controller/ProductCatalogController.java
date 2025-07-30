@@ -35,8 +35,15 @@ public class ProductCatalogController {
 	}
 	
 	@GetMapping("/products/{productKey}")
-	public ProductDTO getProductById(@PathVariable Long productKey) {
-		return productService.findProduct(productKey);
+	public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productKey) {
+		ProductDTO product = productService.findProduct(productKey);
+	    
+	    // Check if product exists (assuming empty ProductDTO has null ID or use your own check)
+	    if (product.getProductKey() == null) {
+	        return ResponseEntity.notFound().build();
+	    }
+	    
+	    return ResponseEntity.ok(product);
 	}
 	
 	@GetMapping("/products/brand-summary")
