@@ -46,6 +46,8 @@ class ProductServiceTest {
 		Mockito.when(productRepository.findById(ID_1)).thenReturn(java.util.Optional.of(PRODUCT_MODEL_1));
 		ProductDTO productDto = productService.findProduct(ID_1);
 		
+		// Make sure the product DTO returned by the service contains the values we expect.
+		// They should match the values in the database model.
 		Assertions.assertEquals(ID_1, productDto.getProductKey());
 		Assertions.assertEquals(BRAND_1, productDto.getBrand());
 		Assertions.assertEquals(RETAILER_1, productDto.getRetailer());
@@ -56,6 +58,4 @@ class ProductServiceTest {
 
 		Mockito.verify(productRepository).findById(ID_1); // Verify interaction with mock
 	}
-	
-	
 }
