@@ -4,7 +4,8 @@
 }
 
 .product-details {
-	text-align: left;
+	display: flex;
+	flex-direction: column;
 	position: absolute;
 	transform: translateX(-95%);
 	width: 90vw;

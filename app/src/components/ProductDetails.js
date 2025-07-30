@@ -38,13 +38,13 @@ const PrdouctDetails = ({ product }) => {
                 isOpen ? (
                     <div className="product-details">
                         <h2>Product Details</h2>
-                        <p><strong>ID:</strong> {product.product_key}</p>
-                        <p><strong>Price:</strong> ${product.price}</p>
-                        <p><strong>Retailer:</strong> {product.retailer}</p>
-                        <p><strong>Brand:</strong> {product.brand}</p>
-                        <p><strong>Model:</strong> {product.model}</p>
-                        <p><strong>Name:</strong> {product.product_name}</p>
-                        <p><strong>Description:</strong> {product.product_description}</p>
+                        <div><strong>ID:</strong> {product.product_key}</div>
+                        <div><strong>Price:</strong> ${product.price}</div>
+                        <div><strong>Retailer:</strong> {product.retailer}</div>
+                        <div><strong>Brand:</strong> {product.brand}</div>
+                        <div><strong>Model:</strong> {product.model}</div>
+                        <div><strong>Name:</strong> {product.product_name}</div>
+                        <div><strong>Description:</strong> {product.product_description}</div>
                     </div>
                 ) : null
             }
