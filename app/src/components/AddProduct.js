@@ -62,8 +62,10 @@ const AddProduct = ({ onAddProduct, onClose }) => {
                     <Label for="product_description">Description</Label>
                     <Input type="textarea" name="product_description" id="product_description" value={product.product_description} onChange={handleChange} />
                 </FormGroup>
-                <Button type="submit" color="primary">Add Product</Button>
-                <Button onClick={ onClose } color="secondary">Close</Button>
+                <div className="form-actions">
+                    <Button type="submit" color="primary">Add Product</Button>&nbsp;
+                    <Button onClick={onClose} color="secondary">Close</Button>
+                </div>
             </Form>
         </div>
     );
