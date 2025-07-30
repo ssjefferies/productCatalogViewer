@@ -5,20 +5,83 @@ A Spring Boot REST API for managing product catalogs with full CRUD operations.
 
 ## Prerequisites
 
+### For Docker Setup (Recommended)
+- **Docker** 20.10 or higher
+- **Docker Compose** 2.0 or higher
+
+### For Local Development
 - **Java 17** or higher
 - **Maven 3.6.3** or higher
 - **PostgreSQL 12** or higher
 - **Git** for version control
 
+
+## Project Structure
+```
+productCatalogViewer/
+├── src/
+│   ├── main/java/com/ssjdev/productCatalogViewer/
+│   │   ├── controller/     # REST controllers
+│   │   ├── service/        # Business logic
+│   │   ├── model/          # JPA entities
+│   │   ├── dto/            # Data Transfer Objects
+│   │   └── repository/     # Data access layer
+│   └── test/               # Unit and integration tests
+├── Dockerfile              # Container build instructions
+├── docker-compose.yml      # Development environment
+├── init.sql               # Sample data (optional)
+├── pom.xml                # Maven dependencies
+└── README.md              # This file
+```
+
 ## Setup Instructions
 
-### 1. Clone the Repository
+### Option 1: Docker Setup (Recommended)
+
+#### Quick Start
+```bash
+# Clone and start
+git clone https://github.com/your-username/productCatalogViewer.git
+cd productCatalogViewer
+docker-compose up --build
+```
+
+#### Docker Commands
+```bash
+# Start all services in background
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f app
+docker-compose logs -f postgres
+
+# Stop services
+docker-compose down
+
+# Stop and remove data volumes
+docker-compose down -v
+
+# Rebuild just the application
+docker-compose build app
+```
+
+#### Access Points
+- **API Base URL**: http://localhost:8080/api
+- **Health Check**: http://localhost:8080/actuator/health
+- **Database**: localhost:5432 (from host machine)
+- **pgAdmin** (Database UI): http://localhost:5050
+  - Email: admin@example.com
+  - Password: admin
+
+### Option 2: Local Development Setup
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/ssjefferies/productCatalogViewer.git
 cd productCatalogViewer
 ```
 
-### 2. Database Setup
+#### 2. Database Setup
 Create a PostgreSQL database and user:
 ```sql
 CREATE DATABASE product_catalog;
@@ -26,7 +89,7 @@ CREATE USER catalog_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE product_catalog TO catalog_user;
 ```
 
-### 3. Application Configuration
+#### 3. Application Configuration
 Create or update `src/main/resources/application.properties`:
 ```properties
 # Database Configuration
@@ -183,6 +246,18 @@ For server errors, the API returns a simple error message:
 
 ## Development
 
+### Docker Development Workflow
+```bash
+# Start development environment
+docker-compose up -d postgres pgadmin
+
+# Run application locally (connects to Docker database)
+mvn spring-boot:run
+
+# Or run everything in Docker
+docker-compose up --build
+```
+
 ### Running Tests
 ```bash
 # Run all tests
@@ -191,6 +266,13 @@ mvn test
 # Run specific test class
 mvn test -Dtest=ProductServiceTest
 ```
+
+### Database Management
+- **pgAdmin**: http://localhost:5050 (when using Docker)
+- **Direct connection**: localhost:5432
+  - Database: product_catalog
+  - Username: catalog_user
+  - Password: catalog_password (Docker) / your_password (local)
 
 ### Database Schema
 The application automatically creates the following table structure:
@@ -209,30 +291,137 @@ CREATE TABLE product (
 
 **Note**: The `product_key` field serves as the primary key and is auto-generated.
 
-## Production Deployment
 
-### Environment Variables
+### Docker Production Setup
+
+#### 1. Environment Variables
+Create a `.env` file for production:
+```bash
+# Database
+DB_PASSWORD=your_secure_password
+DB_NAME=product_catalog
+DB_USER=catalog_user
+
+# Application
+SPRING_PROFILES_ACTIVE=prod
+SERVER_PORT=8080
+```
+
+#### 2. Production Docker Compose
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    ports:
+      - "${SERVER_PORT}:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+```
+
+#### 3. Deploy to Production
+```bash
+# Build and deploy
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# Check logs
+docker-compose -f docker-compose.prod.yml logs -f
+```
+
+### Traditional Deployment
+
+#### Environment Variables
 Set the following environment variables for production:
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:postgresql://your-db-host:5432/product_catalog
 export SPRING_DATASOURCE_USERNAME=your_username
 export SPRING_DATASOURCE_PASSWORD=your_password
 export SERVER_PORT=8080
+export SPRING_PROFILES_ACTIVE=prod
 ```
 
-### Docker Deployment
-```dockerfile
-FROM openjdk:17-jdk-slim
-COPY target/productCatalogViewer-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
-
-Build and run:
+#### JAR Deployment
 ```bash
-docker build -t product-catalog-api .
-docker run -p 8080:8080 product-catalog-api
+# Build the JAR
+mvn clean package -DskipTests
+
+# Run in production
+java -jar target/productCatalogViewer-0.0.1-SNAPSHOT.jar
 ```
+
+## Troubleshooting
+
+### Common Docker Issues
+
+#### Port Already in Use
+```bash
+# Check what's using port 8080 or 5432
+lsof -i :8080
+lsof -i :5432
+
+# Stop conflicting services
+docker-compose down
+# Kill specific processes if needed
+```
+
+#### Database Connection Issues
+```bash
+# Check if database is healthy
+docker-compose ps
+docker-compose logs postgres
+
+# Reset database
+docker-compose down -v
+docker-compose up postgres
+```
+
+#### Application Won't Start
+```bash
+# Check application logs
+docker-compose logs app
+
+# Rebuild without cache
+docker-compose build --no-cache app
+docker-compose up app
+```
+
+### Common Development Issues
+
+#### Maven Build Fails
+```bash
+# Clean and rebuild
+mvn clean install -DskipTests
+
+# Update dependencies
+mvn dependency:resolve
+```
+
+#### Database Schema Issues
+```bash
+# Reset schema (WARNING: deletes data)
+# Set spring.jpa.hibernate.ddl-auto=create-drop in application.properties
+```
+
 
 ## Contributing
 
