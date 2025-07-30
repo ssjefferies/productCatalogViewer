@@ -164,15 +164,21 @@ The API returns standard HTTP status codes:
 - `500 Internal Server Error` - Server error
 
 ### Error Response Format
-For validation errors or server errors, the API returns a simple error message:
+For validation errors that occur when a new Product is Posted, the API returns a list of field names,
+each with an associated error message:
+{
+    "price": "Price must have at most 7 integer digits and 4 fraction digits",
+    "model": "Model can be up to 50 characters at most"
+}
+
+For server errors, the API returns a simple error message:
 ```json
 "Error creating product: [specific error message]"
 ```
 
-**Note**: Based on your controller implementation:
 - GET endpoints return data directly (200 OK)
 - POST endpoint returns 201 Created on success, 400 Bad Request on error
-- Invalid product keys may return an empty ProductDTO rather than 404
+- Invalid product keys will return a 404
 
 ## Development
 
@@ -201,10 +207,6 @@ CREATE TABLE product (
 ```
 
 **Note**: The `product_key` field serves as the primary key and is auto-generated.
-
-### CORS Configuration
-The application is configured to allow CORS requests from:
-- `http://localhost:3000` (React development server)
 
 ## Production Deployment
 
@@ -245,6 +247,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-- **Author**: Your Name
-- **Email**: your.email@example.com
-- **GitHub**: https://github.com/your-username
+- **Author**: Sean Jefferies
+- **Email**: email@seanjefferies.com
+- **GitHub**: https://github.com/ssjefferies
