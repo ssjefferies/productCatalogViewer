@@ -64,15 +64,19 @@ const ProductList = () => {
         setShowAddProduct(false);
     }
 
-    const productsList = products.map(product => (
-        <tr key={product.product_key}>
-            <td>{product.product_name}</td>
-            <td>{product.brand}</td>
-            <td>${product.price}</td>
-            <td>{product.model}</td>
-            <td><ProductDetails product={product} /></td>
-        </tr>
-    ));
+    const productsList = products.map(product => {
+        // Format price to 2 decimal places
+        const price = product.price ? `$${product.price.toFixed(2)}` : 'N/A'; 
+        return (
+            <tr key={product.product_key}>
+                <td>{product.product_name}</td>
+                <td>{product.brand}</td>
+                <td>{price}</td>
+                <td>{product.model}</td>
+                <td><ProductDetails product={product} /></td>
+            </tr>
+        )
+    });
 
     return (
         <div>
