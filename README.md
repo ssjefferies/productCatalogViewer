@@ -443,7 +443,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 
 
-### What to Improve
+## What to Improve
  - Add authentication to the application and authorization settings for each api endpoint
  - Improve UI styling (by a lot!)
  - Improve input validation on both front and back end
